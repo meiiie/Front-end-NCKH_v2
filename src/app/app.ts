@@ -1,12 +1,16 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ErrorDisplayComponent } from './shared/components/error-display/error-display.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  imports: [RouterOutlet, ErrorDisplayComponent],
+  encapsulation: ViewEncapsulation.None,
+  template: `
+    <router-outlet></router-outlet>
+    <app-error-display></app-error-display>
+  `,
 })
 export class App {
-  protected readonly title = signal('lms-angular');
+  protected readonly title = signal('LMS Maritime - Hệ thống Quản lý Học tập Phân tán');
 }
