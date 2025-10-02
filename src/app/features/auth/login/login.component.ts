@@ -366,7 +366,7 @@ export class LoginComponent {
     try {
       const credentials: LoginRequest = this.loginForm.getRawValue();
       await this.authService.login(credentials);
-      this.redirectAfterLogin();
+      // ✅ Removed duplicate redirect - AuthService.login() already handles redirect
     } catch (error) {
       // Error is handled by the service
     }
@@ -375,30 +375,11 @@ export class LoginComponent {
   async loginAsDemo(role: UserRole): Promise<void> {
     try {
       await this.authService.loginAsDemo(role);
-      this.redirectAfterLogin();
+      // ✅ Removed duplicate redirect - AuthService.loginAsDemo() already handles redirect
     } catch (error) {
       // Error is handled by the service
     }
   }
 
-  private redirectAfterLogin(): void {
-    const role = this.authService.userRole();
-    const safeUrl = this.returnUrl && this.isSafeInternalUrl(this.returnUrl) ? this.returnUrl : null;
-    const target = safeUrl ?? (role ? `/${role}/dashboard` : '/');
-    
-    this.router.navigate([target]).catch(error => {
-      console.error('Navigation error:', error);
-      // Fallback to homepage if navigation fails
-      this.router.navigate(['/']);
-    });
-  }
-
-  private isSafeInternalUrl(url: string): boolean {
-    // Only allow internal paths, no scheme/protocol
-    try {
-      return url.startsWith('/') && !url.startsWith('//') && !url.includes('://');
-    } catch { 
-      return false; 
-    }
-  }
+  // ✅ Removed redirectAfterLogin() method - now handled by AuthService
 }

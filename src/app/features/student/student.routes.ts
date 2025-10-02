@@ -26,7 +26,7 @@ export const studentRoutes: Routes = [
       // Dashboard - Trang chủ học viên
       {
         path: 'dashboard',
-        loadComponent: () => import('../dashboard/student/enhanced-student-dashboard.component').then(m => m.EnhancedStudentDashboardComponent),
+        loadComponent: () => import('./dashboard/enhanced-student-dashboard.component').then(m => m.EnhancedStudentDashboardComponent),
         title: 'Dashboard - Học viên'
       },
       
