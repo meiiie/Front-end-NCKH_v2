@@ -12,6 +12,11 @@ export const authRoutes: Routes = [
     title: 'Đăng ký - LMS Maritime'
   },
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
+    title: 'Quên mật khẩu - LMS Maritime'
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'

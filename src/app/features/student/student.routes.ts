@@ -48,7 +48,7 @@ export const studentRoutes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('../assignments/student-assignments.component').then(m => m.StudentAssignmentsComponent),
+            loadComponent: () => import('../assignments/presentation/pages/assignment-list-page.component').then(m => m.AssignmentListPageComponent),
             title: 'Bài tập của tôi'
           },
           {
@@ -64,14 +64,44 @@ export const studentRoutes: Routes = [
         ]
       },
       
-      // Learning Routes
+      // Learning Routes - Nested under student
       {
-        path: 'learning',
+        path: 'learn',
         children: [
           {
             path: '',
             loadComponent: () => import('../learning/learning-new.component').then(m => m.LearningNewComponent),
             title: 'Học tập'
+          },
+          {
+            path: 'select',
+            loadComponent: () => import('../learning/components/course-selection.component').then(m => m.CourseSelectionComponent),
+            title: 'Chọn khóa học - Học viên'
+          },
+          {
+            path: 'course/:id',
+            loadComponent: () => import('../learning/components/professional-learning-interface.component').then(m => m.ProfessionalLearningInterfaceComponent),
+            title: 'Khóa học - Học viên'
+          },
+          {
+            path: 'planner',
+            loadComponent: () => import('../learning/components/study-planner.component').then(m => m.StudyPlannerComponent),
+            title: 'Study Planner - Học viên'
+          },
+          {
+            path: 'calendar',
+            loadComponent: () => import('../learning/components/learning-calendar.component').then(m => m.LearningCalendarComponent),
+            title: 'Learning Calendar - Học viên'
+          },
+          {
+            path: 'notes',
+            loadComponent: () => import('../learning/components/note-taking.component').then(m => m.NoteTakingComponent),
+            title: 'Ghi chú - Học viên'
+          },
+          {
+            path: 'bookmarks',
+            loadComponent: () => import('../learning/components/bookmark-system.component').then(m => m.BookmarkSystemComponent),
+            title: 'Bookmarks - Học viên'
           }
         ]
       },
@@ -82,17 +112,17 @@ export const studentRoutes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('../learning/quiz/quiz-list.component').then(m => m.QuizListComponent),
+            loadComponent: () => import('../learning/quiz/presentation/components/quiz-list.component').then(m => m.QuizListComponent),
             title: 'Quiz'
           },
           {
             path: 'take/:id',
-            loadComponent: () => import('../learning/quiz/quiz-taking.component').then(m => m.QuizTakingComponent),
+            loadComponent: () => import('../learning/quiz/presentation/components/quiz-attempt.component').then(m => m.QuizAttemptComponent),
             title: 'Làm Quiz'
           },
           {
-            path: 'result/:id',
-            loadComponent: () => import('../learning/quiz/quiz-result.component').then(m => m.QuizResultComponent),
+            path: 'result',
+            loadComponent: () => import('../learning/quiz/presentation/components/quiz-result.component').then(m => m.QuizResultComponent),
             title: 'Kết quả Quiz'
           }
         ]

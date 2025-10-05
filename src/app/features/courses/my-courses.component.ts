@@ -1,36 +1,12 @@
-import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, computed, inject, effect, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CourseService } from '../../state/course.service';
 import { AuthService } from '../../core/services/auth.service';
-import { ExtendedCourse } from '../../shared/types/course.types';
+import { ExtendedCourse, EnrolledCourse } from '../../shared/types/course.types';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
-
-interface EnrolledCourse extends ExtendedCourse {
-  enrolledAt: Date;
-  progress: number;
-  completedLessons: number;
-  totalLessons: number;
-  lastAccessed: Date;
-  status: 'enrolled' | 'in-progress' | 'completed' | 'paused';
-  certificateInfo?: {
-    id: string;
-    issuedAt: Date;
-    certificateUrl: string;
-  };
-  // Enhanced features
-  studyTime: number; // in minutes
-  averageScore: number;
-  lastLessonCompleted?: string;
-  nextLesson?: string;
-  upcomingDeadlines: Date[];
-  notesCount: number;
-  bookmarksCount: number;
-  isFavorite: boolean;
-  studyStreak: number; // days
-}
 
 interface CourseFilter {
   status: string[];
@@ -182,10 +158,10 @@ interface CourseFilter {
                   <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                     <div>
                       <p class="text-sm font-medium text-gray-900">{{ course.title }}</p>
-                      <p class="text-xs text-gray-600">{{ course.upcomingDeadlines.length }} deadline(s)</p>
+                      <p class="text-xs text-gray-600">{{ course.upcomingDeadlines?.length || 0 }} deadline(s)</p>
                     </div>
                     <div class="text-right">
-                      @for (deadline of course.upcomingDeadlines.slice(0, 2); track deadline) {
+                      @for (deadline of course.upcomingDeadlines?.slice(0, 2) || []; track deadline) {
                         <p class="text-xs text-orange-600 font-medium">{{ formatDate(deadline) }}</p>
                       }
                     </div>
@@ -335,7 +311,7 @@ interface CourseFilter {
                   }
 
                   <!-- Study Streak -->
-                  @if (course.studyStreak > 0) {
+                  @if ((course.studyStreak || 0) > 0) {
                     <div class="flex items-center space-x-2 text-sm">
                       <span class="text-orange-600">🔥</span>
                       <span class="text-gray-600">{{ course.studyStreak }} ngày liên tiếp</span>
@@ -448,11 +424,10 @@ interface CourseFilter {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MyCoursesComponent implements OnInit {
+export class MyCoursesComponent {
   protected courseService = inject(CourseService);
   protected authService = inject(AuthService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
   private errorService = inject(ErrorHandlingService);
 
   // Loading state
@@ -486,10 +461,7 @@ export class MyCoursesComponent implements OnInit {
       tags: ['Kỹ thuật', 'Tàu biển', 'Cơ bản'],
       skills: ['Kỹ thuật tàu', 'Hệ thống động lực'],
       prerequisites: ['Toán học cơ bản'],
-      certificate: {
-        type: 'Professional' as const,
-        description: 'Chứng chỉ Kỹ thuật Tàu biển'
-      },
+      certificate: true,
       curriculum: {
         modules: 6,
         lessons: 12,
@@ -540,10 +512,7 @@ export class MyCoursesComponent implements OnInit {
       tags: ['An toàn', 'Quốc tế', 'Rủi ro'],
       skills: ['Quản lý rủi ro', 'An toàn hàng hải'],
       prerequisites: ['Kinh nghiệm hàng hải'],
-      certificate: {
-        type: 'STCW' as const,
-        description: 'Chứng chỉ An toàn Quốc tế'
-      },
+      certificate: true,
       curriculum: {
         modules: 9,
         lessons: 18,
@@ -599,10 +568,7 @@ export class MyCoursesComponent implements OnInit {
       tags: ['Cảng biển', 'Logistics', 'Chuỗi cung ứng'],
       skills: ['Quản lý cảng', 'Logistics'],
       prerequisites: ['Kinh tế cơ bản'],
-      certificate: {
-        type: 'Professional' as const,
-        description: 'Chứng chỉ Quản lý Cảng'
-      },
+      certificate: false,
       curriculum: {
         modules: 7,
         lessons: 14,
@@ -709,26 +675,27 @@ export class MyCoursesComponent implements OnInit {
     return courses;
   });
 
-  ngOnInit(): void {
-    this.loadEnrolledCourses();
+  constructor() {
+    // Initialize component data when created
+    effect(() => {
+      if (!this.isLoading()) {
+        this.loadEnrolledCourses();
+      }
+    });
   }
 
   private async loadEnrolledCourses(): Promise<void> {
     try {
       this.isLoading.set(true);
-      
+
       // Simulate loading data
       await this.simulateDataLoading();
-      
-      // Force change detection to ensure component renders
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
-      
+
       console.log('🔧 My Courses - Component initialized successfully');
       console.log('🔧 My Courses - Enrolled courses count:', this.enrolledCourses().length);
-      
+
       this.errorService.showSuccess('Khóa học đã được tải thành công!', 'courses');
-      
+
     } catch (error) {
       this.errorService.handleApiError(error, 'courses');
     } finally {
@@ -741,12 +708,13 @@ export class MyCoursesComponent implements OnInit {
     await new Promise(resolve => setTimeout(resolve, 1200));
   }
 
-  formatStudyTime(minutes: number): string {
-    if (minutes < 60) {
-      return `${minutes} phút`;
+  formatStudyTime(minutes: number | undefined): string {
+    const mins = minutes || 0;
+    if (mins < 60) {
+      return `${mins} phút`;
     }
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
+    const hours = Math.floor(mins / 60);
+    const remainingMinutes = mins % 60;
     return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
   }
 
@@ -767,8 +735,8 @@ export class MyCoursesComponent implements OnInit {
 
   continueLearning(courseId: string): void {
     console.log('🔧 My Courses - Continue learning course:', courseId);
-    this.router.navigate(['/learn/course', courseId]).catch(error => {
-      this.errorService.handleNavigationError(error, `/learn/course/${courseId}`);
+    this.router.navigate(['/student/learn/course', courseId]).catch(error => {
+      this.errorService.handleNavigationError(error, `/student/learn/course/${courseId}`);
     });
   }
 
@@ -822,8 +790,9 @@ export class MyCoursesComponent implements OnInit {
     }
   }
 
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('vi-VN');
+  formatDate(date: string | Date): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('vi-VN');
   }
 
   // Enhanced features
@@ -894,20 +863,20 @@ export class MyCoursesComponent implements OnInit {
   getUpcomingDeadlines(): EnrolledCourse[] {
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
-    return this.enrolledCourses().filter(course => 
-      course.upcomingDeadlines.some(deadline => 
+
+    return this.enrolledCourses().filter(course =>
+      course.upcomingDeadlines?.some(deadline =>
         deadline >= today && deadline <= nextWeek
-      )
+      ) || false
     );
   }
 
   getStudyStreak(): number {
-    return Math.max(...this.enrolledCourses().map(course => course.studyStreak));
+    return Math.max(...this.enrolledCourses().map(course => course.studyStreak || 0));
   }
 
   getTotalStudyTime(): number {
-    return this.enrolledCourses().reduce((total, course) => total + course.studyTime, 0);
+    return this.enrolledCourses().reduce((total, course) => total + (course.studyTime || 0), 0);
   }
 
   getTotalNotes(): number {
@@ -915,8 +884,8 @@ export class MyCoursesComponent implements OnInit {
   }
 
   getAverageScore(): number {
-    const courses = this.enrolledCourses().filter(course => course.averageScore > 0);
+    const courses = this.enrolledCourses().filter(course => (course.averageScore || 0) > 0);
     if (courses.length === 0) return 0;
-    return courses.reduce((sum, course) => sum + course.averageScore, 0) / courses.length;
+    return courses.reduce((sum, course) => sum + (course.averageScore || 0), 0) / courses.length;
   }
 }

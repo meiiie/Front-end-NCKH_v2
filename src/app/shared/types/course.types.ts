@@ -212,6 +212,68 @@ export interface CourseEnrollment {
   isActive: boolean;
 }
 
+// Unified Enrolled Course interface for UI components
+export interface EnrolledCourse {
+  id: string;
+  title: string;
+  description: string;
+  shortDescription?: string;
+  instructor: string | {
+    id: string;
+    name: string;
+    title: string;
+    avatar: string;
+    credentials: string[];
+    experience: number;
+    rating: number;
+    studentsCount: number;
+  };
+  thumbnail: string;
+  progress: number;
+  totalLessons: number;
+  completedLessons: number;
+  duration: string;
+  lastAccessed: string | Date;
+  status: 'enrolled' | 'in-progress' | 'completed' | 'not-started' | 'paused';
+  category?: string;
+  rating?: number;
+  deadline?: string;
+  // Enhanced features
+  currentLesson?: string;
+  nextLesson?: string;
+  studyTime?: number; // in minutes
+  averageScore?: number;
+  notesCount?: number;
+  bookmarksCount?: number;
+  isFavorite?: boolean;
+  lastLessonCompleted?: string;
+  upcomingDeadlines?: Date[];
+  certificateAvailable?: boolean;
+  certificate?: boolean;
+  certificateInfo?: {
+    id: string;
+    issuedAt: Date;
+    certificateUrl: string;
+  };
+  enrolledAt?: Date;
+  studyStreak?: number; // days
+  level?: string;
+  students?: number;
+  reviews?: number;
+  price?: number;
+  tags?: string[];
+  skills?: string[];
+  prerequisites?: string[];
+  curriculum?: {
+    modules: number;
+    lessons: number;
+    duration: string;
+  };
+  studentsCount?: number;
+  lessonsCount?: number;
+  isPublished?: boolean;
+}
+
 // Course Certificate interface
 export interface CourseCertificate {
   id: string;

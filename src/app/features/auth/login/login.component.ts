@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-import { LoginRequest, UserRole } from '../../../shared/types/user.types';
+import { LoginRequest } from '../../../shared/types/user.types';
+import { UserRole } from '../../../shared/types/user.types';
 
 // Typed form interface
 type LoginForm = {
-  email: FormControl<string>;
+  username: FormControl<string>;
   password: FormControl<string>;
   rememberMe: FormControl<boolean>;
 };
@@ -17,6 +18,15 @@ type LoginForm = {
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
   encapsulation: ViewEncapsulation.Emulated,
   template: `
+    <style>
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
     <div class="min-h-screen bg-white">
       <!-- Udemy-style Split Layout -->
       <div class="flex min-h-screen">
@@ -84,34 +94,35 @@ type LoginForm = {
             </div>
             <!-- Udemy-style Form -->
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-              <!-- Email Field - Udemy Style -->
+              <!-- Username Field - Udemy Style -->
               <div>
                 <div class="relative">
-                  <input id="email"
-                         name="email"
-                         type="email"
-                         formControlName="email"
-                         autocomplete="email"
+                  <input id="username"
+                         name="username"
+                         type="text"
+                         formControlName="username"
+                         autocomplete="username"
                          required
-                         [attr.aria-invalid]="loginForm.get('email')?.invalid || null"
-                         [attr.aria-describedby]="loginForm.get('email')?.invalid ? 'email-error' : null"
+                         [attr.aria-invalid]="loginForm.get('username')?.invalid || null"
+                         [attr.aria-describedby]="loginForm.get('username')?.invalid ? 'username-error' : null"
                          class="block w-full px-4 py-4 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base"
-                         [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                         [class.border-red-500]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
                          placeholder=" ">
-                  <label for="email" class="absolute left-4 top-4 text-gray-500 transition-all duration-200 pointer-events-none"
-                         [class.-top-2]="loginForm.get('email')?.value || loginForm.get('email')?.touched"
-                         [class.text-xs]="loginForm.get('email')?.value || loginForm.get('email')?.touched"
-                         [class.bg-white]="loginForm.get('email')?.value || loginForm.get('email')?.touched"
-                         [class.px-1]="loginForm.get('email')?.value || loginForm.get('email')?.touched">
-                    Email
+                  <label for="username" class="absolute left-4 top-4 text-gray-500 transition-all duration-200 pointer-events-none"
+                         [class.-top-2]="loginForm.get('username')?.value || loginForm.get('username')?.touched"
+                         [class.text-xs]="loginForm.get('username')?.value || loginForm.get('username')?.touched"
+                         [class.bg-white]="loginForm.get('username')?.value || loginForm.get('username')?.touched"
+                         [class.px-1]="loginForm.get('username')?.value || loginForm.get('username')?.touched">
+                    Tên đăng nhập
                   </label>
                 </div>
-                @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-                  <p id="email-error" class="mt-2 text-sm text-red-600" role="alert" aria-live="polite">
-                    @if (loginForm.get('email')?.errors?.['required']) {
-                      Email là bắt buộc
-                    } @else if (loginForm.get('email')?.errors?.['email']) {
-                      Email không hợp lệ
+                @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+                  <p id="username-error" class="mt-2 text-sm text-red-600 flex items-center" role="alert" aria-live="polite">
+                    <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    @if (loginForm.get('username')?.errors?.['required']) {
+                      Tên đăng nhập là bắt buộc
                     }
                   </p>
                 }
@@ -156,7 +167,10 @@ type LoginForm = {
                   </button>
                 </div>
                 @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-                  <p id="password-error" class="mt-2 text-sm text-red-600" role="alert" aria-live="polite">
+                  <p id="password-error" class="mt-2 text-sm text-red-600 flex items-center" role="alert" aria-live="polite">
+                    <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
                     @if (loginForm.get('password')?.errors?.['required']) {
                       Mật khẩu là bắt buộc
                     } @else if (loginForm.get('password')?.errors?.['minlength']) {
@@ -187,9 +201,26 @@ type LoginForm = {
                 </div>
               </div>
 
+              <!-- Success Message -->
+              @if (showSuccessMessage()) {
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 animate-fade-in" role="alert" aria-live="polite">
+                  <div class="flex">
+                    <div class="flex-shrink-0">
+                      <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <h3 class="text-sm font-medium text-green-800 mb-1">Đăng nhập thành công!</h3>
+                      <p class="text-sm text-green-700">{{ successMessage() }}</p>
+                    </div>
+                  </div>
+                </div>
+              }
+
               <!-- Error Message -->
               @if (authService.error()) {
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4" role="alert" aria-live="polite">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 animate-fade-in" role="alert" aria-live="polite">
                   <div class="flex">
                     <div class="flex-shrink-0">
                       <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
@@ -197,7 +228,8 @@ type LoginForm = {
                       </svg>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm text-red-800">{{ authService.error() }}</p>
+                      <h3 class="text-sm font-medium text-red-800 mb-1">Đăng nhập thất bại</h3>
+                      <p class="text-sm text-red-700">{{ getErrorMessage(authService.error()!) }}</p>
                     </div>
                   </div>
                 </div>
@@ -344,11 +376,13 @@ export class LoginComponent {
 
   loginForm: FormGroup<LoginForm>;
   showPassword = signal(false);
+  showSuccessMessage = signal(false);
+  successMessage = signal('');
   private returnUrl: string;
 
   constructor() {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     }) as FormGroup<LoginForm>;
@@ -366,7 +400,7 @@ export class LoginComponent {
     try {
       const credentials: LoginRequest = this.loginForm.getRawValue();
       await this.authService.login(credentials);
-      // ✅ Removed duplicate redirect - AuthService.login() already handles redirect
+      // ✅ Redirect is handled by AuthService
     } catch (error) {
       // Error is handled by the service
     }
@@ -375,10 +409,53 @@ export class LoginComponent {
   async loginAsDemo(role: UserRole): Promise<void> {
     try {
       await this.authService.loginAsDemo(role);
-      // ✅ Removed duplicate redirect - AuthService.loginAsDemo() already handles redirect
+
+      // Show success message
+      const roleName = this.getRoleDisplayName(role);
+      this.successMessage.set(`Đã đăng nhập thành công với tài khoản ${roleName}!`);
+      this.showSuccessMessage.set(true);
+
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        this.showSuccessMessage.set(false);
+      }, 3000);
+
+      // ✅ Redirect is handled by AuthService
     } catch (error) {
-      // Error is handled by the service
+      // Error is handled by the store
     }
+  }
+
+  private getRoleDisplayName(role: UserRole): string {
+    switch (role) {
+      case UserRole.STUDENT: return 'Học viên';
+      case UserRole.TEACHER: return 'Giảng viên';
+      case UserRole.ADMIN: return 'Quản trị viên';
+      default: return 'Người dùng';
+    }
+  }
+
+  getErrorMessage(error: string): string {
+    // Map common error messages to user-friendly Vietnamese messages
+    const errorMappings: Record<string, string> = {
+      'Invalid credentials': 'Tên đăng nhập hoặc mật khẩu không đúng',
+      'User not found': 'Tài khoản không tồn tại',
+      'Account locked': 'Tài khoản đã bị khóa',
+      'Too many attempts': 'Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.',
+      'Network error': 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.',
+      'Server error': 'Lỗi máy chủ. Vui lòng thử lại sau.',
+      'Login failed': 'Đăng nhập thất bại. Vui lòng thử lại.'
+    };
+
+    // Check if the error message contains any known patterns
+    for (const [key, message] of Object.entries(errorMappings)) {
+      if (error.toLowerCase().includes(key.toLowerCase())) {
+        return message;
+      }
+    }
+
+    // Return the original error if no mapping found
+    return error;
   }
 
   // ✅ Removed redirectAfterLogin() method - now handled by AuthService

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard } from './core/guards/role.guard';
 import { HomepageLayoutComponent } from './shared/components/layout/homepage-layout/homepage-layout.component';
 
 /**
@@ -29,36 +29,48 @@ export const routes: Routes = [
         loadComponent: () => import('./features/courses/courses.component').then(m => m.CoursesComponent),
         title: 'Khóa học - LMS Maritime'
       },
-      // Category Landing Pages
+      // Category Landing Pages - Explicit routes for SSR compatibility
       {
         path: 'courses/safety',
-        loadComponent: () => import('./features/courses/category/safety-category.component').then(m => m.SafetyCategoryComponent),
-        title: 'An toàn Hàng hải - LMS Maritime'
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'An toàn Hàng hải - LMS Maritime',
+        data: { category: 'safety' }
       },
       {
         path: 'courses/navigation',
-        loadComponent: () => import('./features/courses/category/navigation-category.component').then(m => m.NavigationCategoryComponent),
-        title: 'Điều khiển Tàu - LMS Maritime'
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'Điều khiển Tàu - LMS Maritime',
+        data: { category: 'navigation' }
       },
       {
         path: 'courses/engineering',
-        loadComponent: () => import('./features/courses/category/engineering-category.component').then(m => m.EngineeringCategoryComponent),
-        title: 'Kỹ thuật Máy tàu - LMS Maritime'
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'Kỹ thuật Máy tàu - LMS Maritime',
+        data: { category: 'engineering' }
       },
       {
         path: 'courses/logistics',
-        loadComponent: () => import('./features/courses/category/logistics-category.component').then(m => m.LogisticsCategoryComponent),
-        title: 'Logistics Hàng hải - LMS Maritime'
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'Logistics Hàng hải - LMS Maritime',
+        data: { category: 'logistics' }
       },
       {
         path: 'courses/law',
-        loadComponent: () => import('./features/courses/category/law-category.component').then(m => m.LawCategoryComponent),
-        title: 'Luật Hàng hải - LMS Maritime'
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'Luật Hàng hải - LMS Maritime',
+        data: { category: 'law' }
       },
       {
         path: 'courses/certificates',
-        loadComponent: () => import('./features/courses/category/certificates-category.component').then(m => m.CertificatesCategoryComponent),
-        title: 'Chứng chỉ Chuyên môn - LMS Maritime'
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'Chứng chỉ Chuyên môn - LMS Maritime',
+        data: { category: 'certificates' }
+      },
+      // Fallback dynamic route for any other categories
+      {
+        path: 'courses/:category',
+        loadComponent: () => import('./features/courses/category/configurable-category.component').then(m => m.ConfigurableCategoryComponent),
+        title: 'Khóa học - LMS Maritime'
       },
       // Course detail should be after specific category routes to avoid capturing them as IDs
       {

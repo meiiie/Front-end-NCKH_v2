@@ -71,10 +71,10 @@ import { ExtendedCourse } from '../../../../shared/types/course.types';
         
         <!-- Course Instructor -->
         <div class="flex items-center mb-4">
-          <img 
-            [ngSrc]="course.instructor.avatar" 
-            width="32" 
-            height="32" 
+          <img
+            [ngSrc]="course.instructor.avatar"
+            width="48"
+            height="32"
             class="w-8 h-8 rounded-full mr-3"
             [alt]="course.instructor.name" />
           <div>

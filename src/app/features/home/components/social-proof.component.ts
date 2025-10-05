@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 interface Testimonial {
   id: string;
@@ -19,7 +19,7 @@ interface Partner {
 
 @Component({
   selector: 'app-social-proof',
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage],
   encapsulation: ViewEncapsulation.None,
   template: `
     <section class="py-16 bg-white">
@@ -33,9 +33,11 @@ interface Partner {
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60 mb-16">
           @for (partner of partners; track partner.id) {
             <div class="flex justify-center">
-              <img 
-                [src]="partner.logo" 
-                [alt]="partner.name" 
+              <img
+                [ngSrc]="partner.logo"
+                [alt]="partner.name"
+                width="120"
+                height="48"
                 class="h-12 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
               />
             </div>
@@ -48,8 +50,10 @@ interface Partner {
             <div class="bg-gray-50 p-6 rounded-lg hover:shadow-md transition-all duration-300 group">
               <div class="flex items-center mb-4">
                 <img
-                  [src]="testimonial.avatar"
+                  [ngSrc]="testimonial.avatar"
                   [alt]="testimonial.name"
+                  width="72"
+                  height="48"
                   class="w-12 h-12 rounded-full object-cover mr-4 group-hover:scale-110 transition-transform duration-200"
                 />
                 <div>

@@ -308,12 +308,11 @@ export class RegisterComponent implements OnInit {
       // For passwordless registration, we'll create a default user with student role
       const formData = this.registerForm.getRawValue();
       const userData: RegisterRequest = {
-        name: formData.name,
+        username: formData.email.split('@')[0] + Date.now(), // Generate username from email
+        fullName: formData.name,
         email: formData.email,
         password: 'passwordless-temp-' + Date.now(), // Temporary password for passwordless
-        role: UserRole.STUDENT, // Default to student for passwordless registration
-        department: 'maritime_safety', // Default department
-        studentId: ''
+        role: UserRole.STUDENT // Default to student for passwordless registration
       };
       
       await this.authService.register(userData);

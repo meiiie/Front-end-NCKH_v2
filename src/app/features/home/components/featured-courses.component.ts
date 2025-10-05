@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 interface Course {
@@ -16,7 +16,7 @@ interface Course {
 
 @Component({
   selector: 'app-featured-courses',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NgOptimizedImage],
   encapsulation: ViewEncapsulation.None,
   template: `
     <section class="py-16 bg-gray-50">
@@ -37,8 +37,10 @@ interface Course {
               <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
                 <div class="relative">
                   <img
-                    [src]="course.image || '/images/placeholder.svg'"
+                    [ngSrc]="course.image || '/images/placeholder.svg'"
                     [alt]="course.title"
+                    width="400"
+                    height="192"
                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div class="absolute top-4 left-4">
@@ -114,8 +116,10 @@ interface Course {
               <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
                 <div class="relative">
                   <img
-                    [src]="course.image || '/images/placeholder.svg'"
+                    [ngSrc]="course.image || '/images/placeholder.svg'"
                     [alt]="course.title"
+                    width="400"
+                    height="192"
                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div class="absolute top-4 left-4">
@@ -164,8 +168,10 @@ interface Course {
               <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
                 <div class="relative">
                   <img
-                    [src]="course.image || '/images/placeholder.svg'"
+                    [ngSrc]="course.image || '/images/placeholder.svg'"
                     [alt]="course.title"
+                    width="400"
+                    height="192"
                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div class="absolute top-4 left-4">

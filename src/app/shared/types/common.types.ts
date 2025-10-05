@@ -1,8 +1,12 @@
 export interface ApiResponse<T> {
-  data: T;
-  message: string;
-  success: boolean;
-  timestamp: string;
+  data?: T;
+  message?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
 }
 
 export interface PaginatedResponse<T> {

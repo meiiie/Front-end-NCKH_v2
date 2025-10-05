@@ -2,10 +2,12 @@ import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy, V
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CourseService } from '../../state/course.service';
+import { CourseService } from './courses.service'; // Updated to use DDD-based service
 import { CourseCardComponent } from './shared/course-card.component';
 import { PaginationComponent, PaginationInfo } from '../../shared/components/pagination/pagination.component';
-import { Course, CourseCategory, CourseLevel, FilterOptions, ExtendedCourse, LEVEL_LABELS } from '../../shared/types/course.types';
+import { Course, CourseCategory, FilterOptions, ExtendedCourse, LEVEL_LABELS } from '../../shared/types/course.types';
+import { Course as DomainCourse, CourseFilters, CourseSortOptions, PaginationOptions, PaginatedResult } from './domain'; // Import domain types
+import { CourseLevel } from './domain/types'; // Import enum as value
 import { Meta, Title } from '@angular/platform-browser';
 import { PLATFORM_ID } from '@angular/core';
 
@@ -142,7 +144,7 @@ import { PLATFORM_ID } from '@angular/core';
             </div>
 
             <!-- Loading State -->
-            @if (courseService.isLoading()) {
+            @if (isLoading()) {
               <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 @for (item of [1,2,3,4,5,6]; track item) {
                   <div class="bg-white rounded-lg shadow-sm overflow-hidden animate-pulse">
@@ -202,6 +204,7 @@ export class CoursesComponent implements OnInit {
   ) {}
 
   courses = signal<ExtendedCourse[]>([]);
+  isLoading = signal<boolean>(false);
   paginationInfo = signal<PaginationInfo>({
     currentPage: 1,
     totalPages: 1,
@@ -266,23 +269,53 @@ export class CoursesComponent implements OnInit {
     });
   }
 
-  private async loadCourses(page: number = 1): Promise<void> {
-    try {
-      const response = await this.courseService.getCourses(this.filters, page, 12);
-      this.courses.set(response.data);
-      
-      // Update pagination info
-      this.paginationInfo.set({
-        currentPage: response.pagination.page,
-        totalPages: response.pagination.totalPages,
-        totalItems: response.pagination.total,
-        itemsPerPage: response.pagination.limit,
-        hasNext: response.pagination.page < response.pagination.totalPages,
-        hasPrevious: response.pagination.page > 1
+  private loadCourses(page: number = 1): void {
+    this.isLoading.set(true);
+
+    // Convert FilterOptions to CourseFilters
+    const courseFilters: CourseFilters = {
+      searchQuery: this.filters.search,
+      category: this.filters.category ? [this.filters.category] : undefined,
+      level: this.filters.level ? [this.mapToDomainLevel(this.filters.level)] : undefined,
+      priceRange: this.filters.priceRange,
+      rating: this.filters.rating
+    };
+
+    const sortOptions: CourseSortOptions = {
+      field: this.filters.sortBy as any || 'rating',
+      direction: this.filters.sortOrder || 'desc'
+    };
+
+    const paginationOptions: PaginationOptions = {
+      page,
+      limit: 12
+    };
+
+    this.courseService.getCourses(courseFilters, sortOptions, paginationOptions)
+      .subscribe({
+        next: (response: PaginatedResult<DomainCourse>) => {
+          // Convert domain courses to UI courses (for now, cast as ExtendedCourse)
+          // TODO: Create proper adapter/mapper
+          this.courses.set(response.items as any);
+
+          // Update pagination info
+          this.paginationInfo.set({
+            currentPage: response.page,
+            totalPages: response.totalPages,
+            totalItems: response.total,
+            itemsPerPage: response.limit,
+            hasNext: response.hasNext,
+            hasPrevious: response.hasPrev
+          });
+
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading courses:', error);
+          this.isLoading.set(false);
+          // TODO: Add proper error handling
+        }
       });
-    } catch (error) {
-      console.error('Error loading courses:', error);
-    }
   }
 
   private injectItemListJsonLd(): void {
@@ -413,5 +446,14 @@ export class CoursesComponent implements OnInit {
       'law': 'Luật hàng hải'
     };
     return categoryNames[category] || category;
+  }
+
+  private mapToDomainLevel(sharedLevel: string): CourseLevel {
+    switch (sharedLevel) {
+      case 'beginner': return CourseLevel.BEGINNER;
+      case 'intermediate': return CourseLevel.INTERMEDIATE;
+      case 'advanced': return CourseLevel.ADVANCED;
+      default: return CourseLevel.BEGINNER;
+    }
   }
 }

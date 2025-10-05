@@ -13,7 +13,7 @@ export const learningRoutes: Routes = [
   },
   {
     path: 'course/:id',
-    loadComponent: () => import('./components/enhanced-learning-interface.component').then(m => m.EnhancedLearningInterfaceComponent),
+    loadComponent: () => import('./components/professional-learning-interface.component').then(m => m.ProfessionalLearningInterfaceComponent),
     title: 'Khóa học - LMS Maritime'
   },
   {
@@ -38,22 +38,17 @@ export const learningRoutes: Routes = [
   },
   {
     path: 'quiz',
-    loadComponent: () => import('./quiz/quiz-list.component').then(m => m.QuizListComponent),
+    loadComponent: () => import('./quiz/presentation/components/quiz-list.component').then(m => m.QuizListComponent),
     title: 'Danh sách Quiz - LMS Maritime'
   },
   {
     path: 'quiz/attempt/:id',
-    loadComponent: () => import('./quiz/quiz-attempt-new.component').then(m => m.QuizAttemptNewComponent),
+    loadComponent: () => import('./quiz/presentation/components/quiz-attempt.component').then(m => m.QuizAttemptComponent),
     title: 'Làm Quiz - LMS Maritime'
   },
   {
-    path: 'quiz/:id/preview',
-    loadComponent: () => import('./quiz/enhanced-quiz.component').then(m => m.EnhancedQuizComponent),
-    title: 'Xem trước Quiz - LMS Maritime'
-  },
-  {
     path: 'quiz/result',
-    loadComponent: () => import('./quiz/quiz-result-new.component').then(m => m.QuizResultNewComponent),
+    loadComponent: () => import('./quiz/presentation/components/quiz-result.component').then(m => m.QuizResultComponent),
     title: 'Kết quả Quiz - LMS Maritime'
   },
   {

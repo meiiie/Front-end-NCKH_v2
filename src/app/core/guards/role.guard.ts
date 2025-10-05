@@ -4,6 +4,25 @@ import { AuthService } from '../services/auth.service';
 import { UserRole } from '../../shared/types/user.types';
 
 /**
+ * General Auth Guard - Ensures user is authenticated
+ * Redirects to login page if not authenticated
+ */
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated()) {
+    return true;
+  }
+
+  // Store the attempted URL for redirecting after login
+  const returnUrl = state.url;
+  return router.createUrlTree(['/auth/login'], {
+    queryParams: { returnUrl }
+  });
+};
+
+/**
  * Role Guard Factory - Creates a guard that checks for specific roles
  * @param allowedRoles Array of roles that can access the route
  * @returns CanActivateFn guard function
@@ -12,7 +31,7 @@ export const roleGuard = (allowedRoles: UserRole[]): CanActivateFn => {
   return (route, state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
-    
+
     const userRole = authService.userRole();
 
     if (userRole && allowedRoles.includes(userRole)) {

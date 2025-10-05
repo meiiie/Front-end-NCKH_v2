@@ -4,31 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ResponsiveService } from '../../shared/services/responsive.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
-
-interface EnrolledCourse {
-  id: string;
-  title: string;
-  description: string;
-  instructor: string;
-  thumbnail: string;
-  progress: number;
-  totalLessons: number;
-  completedLessons: number;
-  duration: string;
-  lastAccessed: string;
-  status: 'in-progress' | 'completed' | 'not-started';
-  // Enhanced features
-  currentLesson?: string;
-  nextLesson?: string;
-  studyTime: number; // in minutes
-  averageScore: number;
-  notesCount: number;
-  bookmarksCount: number;
-  isFavorite: boolean;
-  lastLessonCompleted?: string;
-  upcomingDeadlines: Date[];
-  certificateAvailable: boolean;
-}
+import { EnrolledCourse } from '../../shared/types/course.types';
 
 @Component({
   selector: 'app-learning-new',
@@ -346,7 +322,7 @@ export class LearningNewComponent implements OnInit {
   );
 
   totalStudyTime = computed(() => {
-    const totalMinutes = this.enrolledCourses().reduce((sum, course) => sum + course.studyTime, 0);
+    const totalMinutes = this.enrolledCourses().reduce((sum, course) => sum + (course.studyTime || 0), 0);
     return this.formatStudyTime(totalMinutes);
   });
 
@@ -420,8 +396,8 @@ export class LearningNewComponent implements OnInit {
 
   continueCourse(courseId: string): void {
     console.log('🔧 Learning Interface - Continue course:', courseId);
-    this.router.navigate(['/learn/course', courseId]).catch(error => {
-      this.errorService.handleNavigationError(error, `/learn/course/${courseId}`);
+    this.router.navigate(['/student/learn/course', courseId]).catch(error => {
+      this.errorService.handleNavigationError(error, `/student/learn/course/${courseId}`);
     });
   }
 
@@ -489,21 +465,21 @@ export class LearningNewComponent implements OnInit {
   getUpcomingDeadlines(): EnrolledCourse[] {
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    
-    return this.enrolledCourses().filter(course => 
-      course.upcomingDeadlines.some(deadline => 
+
+    return this.enrolledCourses().filter(course =>
+      course.upcomingDeadlines?.some(deadline =>
         deadline >= today && deadline <= nextWeek
-      )
+      ) || false
     );
   }
 
   getTotalStudyTime(): number {
-    return this.enrolledCourses().reduce((total, course) => total + course.studyTime, 0);
+    return this.enrolledCourses().reduce((total, course) => total + (course.studyTime || 0), 0);
   }
 
   getAverageScore(): number {
-    const courses = this.enrolledCourses().filter(course => course.averageScore > 0);
+    const courses = this.enrolledCourses().filter(course => (course.averageScore || 0) > 0);
     if (courses.length === 0) return 0;
-    return courses.reduce((sum, course) => sum + course.averageScore, 0) / courses.length;
+    return courses.reduce((sum, course) => sum + (course.averageScore || 0), 0) / courses.length;
   }
 }

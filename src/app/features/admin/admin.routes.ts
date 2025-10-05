@@ -13,7 +13,7 @@ import { adminGuard } from '../../core/guards/role.guard';
 export const adminRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./shared/admin-layout-simple.component').then(m => m.AdminLayoutSimpleComponent),
+    loadComponent: () => import('./presentation/components/admin-layout-simple.component').then(m => m.AdminLayoutSimpleComponent),
     canActivate: [adminGuard],
     children: [
       // Default redirect to dashboard
@@ -26,66 +26,66 @@ export const adminRoutes: Routes = [
       // Dashboard - Trang chủ quản trị
       {
         path: 'dashboard',
-        loadComponent: () => import('./admin.component').then(m => m.AdminComponent),
+        loadComponent: () => import('./presentation/components/admin.component').then(m => m.AdminComponent),
         title: 'Dashboard - Quản trị'
       },
-      
+
       // User Management Routes
       {
         path: 'users',
         children: [
           {
             path: '',
-            loadComponent: () => import('./user-management.component').then(m => m.UserManagementComponent),
+            loadComponent: () => import('./presentation/components/user-management.component').then(m => m.UserManagementComponent),
             title: 'Quản lý người dùng'
           }
         ]
       },
-      
+
       // Course Management Routes
       {
         path: 'courses',
         children: [
           {
             path: '',
-            loadComponent: () => import('./course-management.component').then(m => m.CourseManagementComponent),
+            loadComponent: () => import('./presentation/components/course-management.component').then(m => m.CourseManagementComponent),
             title: 'Quản lý khóa học'
           }
         ]
       },
-      
+
       // Analytics Routes
       {
         path: 'analytics',
-        loadComponent: () => import('./admin-analytics.component').then(m => m.AdminAnalyticsComponent),
+        loadComponent: () => import('./presentation/components/admin-analytics.component').then(m => m.AdminAnalyticsComponent),
         title: 'Phân tích hệ thống'
       },
-      
+
       // Settings Routes
       {
         path: 'settings',
-        loadComponent: () => import('./system-settings.component').then(m => m.SystemSettingsComponent),
+        loadComponent: () => import('./presentation/components/system-settings.component').then(m => m.SystemSettingsComponent),
         title: 'Cài đặt hệ thống'
       },
       
       // Reports Routes
       {
         path: 'reports',
-        loadComponent: () => import('./admin-analytics.component').then(m => m.AdminAnalyticsComponent),
+        loadComponent: () => import('./presentation/components/admin-analytics.component').then(m => m.AdminAnalyticsComponent),
         title: 'Báo cáo hệ thống'
       },
-      
+
       // Notifications Routes
       {
         path: 'notifications',
-        loadComponent: () => import('./admin-analytics.component').then(m => m.AdminAnalyticsComponent),
+        loadComponent: () => import('./presentation/components/admin-analytics.component').then(m => m.AdminAnalyticsComponent),
         title: 'Thông báo'
       },
-      
+
       // Logs Routes
       {
         path: 'logs',
-        loadComponent: () => import('./admin-analytics.component').then(m => m.AdminAnalyticsComponent),
+        loadComponent: () => import('./presentation/components/admin-analytics.component').then(m => m.AdminAnalyticsComponent),
         title: 'Nhật ký hệ thống'
       }
     ]
