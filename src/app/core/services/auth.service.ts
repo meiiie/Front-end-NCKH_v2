@@ -458,7 +458,22 @@ export class AuthService {
       }
 
     } catch (error: any) {
-      const errorMessage = error?.error?.message || 'Không thể đặt lại mật khẩu. Vui lòng thử lại.';
+      let errorMessage = 'Không thể đặt lại mật khẩu. Vui lòng thử lại.';
+
+      // Handle specific backend errors
+      if (error?.error?.message) {
+        const backendMessage = error.error.message;
+
+        // Handle database constraint violations
+        if (backendMessage.includes('duplicate key value violates unique constraint "unique_active_otp_per_user"')) {
+          errorMessage = 'Mã OTP đã được sử dụng hoặc đã hết hạn. Vui lòng yêu cầu mã OTP mới.';
+        } else if (backendMessage.includes('OTP')) {
+          errorMessage = backendMessage; // Use backend OTP-specific messages
+        } else {
+          errorMessage = backendMessage;
+        }
+      }
+
       this._error.set(errorMessage);
       this.errorService.addError({
         message: errorMessage,
