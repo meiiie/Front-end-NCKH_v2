@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/role.guard';
+import { UnifiedLayoutComponent } from '../../shared/components/layout/unified-layout.component';
+import { adminLayoutConfig } from '../../shared/components/layout/layout.configs';
 
 /**
  * Admin Routes Configuration
- * 
+ *
  * Cấu trúc routing đơn giản và chuyên nghiệp cho Admin features
  * - Flat structure để dễ maintain
  * - Consistent naming conventions
@@ -13,7 +15,8 @@ import { adminGuard } from '../../core/guards/role.guard';
 export const adminRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./presentation/components/admin-layout-simple.component').then(m => m.AdminLayoutSimpleComponent),
+    component: UnifiedLayoutComponent,
+    data: { config: adminLayoutConfig },
     canActivate: [adminGuard],
     children: [
       // Default redirect to dashboard

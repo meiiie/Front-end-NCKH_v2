@@ -30,6 +30,17 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+// Password Reset
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  otpCode: string;
+  newPassword: string;
+}
+
 // Error Response (matches backend)
 export interface ErrorResponse {
   statusCode: number;

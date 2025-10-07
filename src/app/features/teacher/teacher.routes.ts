@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { teacherGuard } from '../../core/guards/role.guard';
+import { UnifiedLayoutComponent } from '../../shared/components/layout/unified-layout.component';
+import { teacherLayoutConfig } from '../../shared/components/layout/layout.configs';
 
 /**
  * Teacher Routes Configuration
- * 
+ *
  * Cấu trúc routing đơn giản và chuyên nghiệp cho Teacher features
  * - Flat structure để dễ maintain
  * - Consistent naming conventions
@@ -13,7 +15,8 @@ import { teacherGuard } from '../../core/guards/role.guard';
 export const teacherRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./shared/teacher-layout-simple.component').then(m => m.TeacherLayoutSimpleComponent),
+    component: UnifiedLayoutComponent,
+    data: { config: teacherLayoutConfig },
     canActivate: [teacherGuard],
     children: [
       // Default redirect to dashboard

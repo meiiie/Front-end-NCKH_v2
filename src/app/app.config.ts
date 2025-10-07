@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, isDevMode, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, isDevMode, LOCALE_ID, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { registerLocaleData } from '@angular/common';
@@ -10,6 +10,8 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideServiceWorker } from '@angular/service-worker';
 import { authInterceptor } from './api/interceptors/auth.interceptor';
 import { errorInterceptor } from './api/interceptors/error.interceptor';
+import { tokenRefreshInterceptor } from './api/interceptors/token-refresh.interceptor';
+import { GlobalErrorHandler } from './core/error/global-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,8 +22,13 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor, errorInterceptor])
+      withInterceptors([tokenRefreshInterceptor, authInterceptor, errorInterceptor])
     ),
+    // Global error handler
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    },
     // Set default locale to Vietnamese for pipes like CurrencyPipe, DatePipe, etc.
     { provide: LOCALE_ID, useValue: 'vi' },
     // Service Worker disabled in development to avoid redirect issues

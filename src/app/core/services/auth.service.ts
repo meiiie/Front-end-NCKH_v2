@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { User, UserRole, LoginRequest, RegisterRequest } from '../../shared/types/user.types';
-import { AuthenticationResponse } from '../../api/types/auth.types';
+import { AuthenticationResponse, ForgotPasswordRequest, ResetPasswordRequest } from '../../api/types/auth.types';
 import { ApiResponse } from '../../api/types/common.types';
 import { ApiClient } from '../../api/client/api-client';
 import { AUTH_ENDPOINTS } from '../../api/endpoints/auth.endpoints';
@@ -404,5 +404,70 @@ export class AuthService {
 
   private async simulateApiCall(): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  // Password Reset Methods
+  async forgotPassword(request: ForgotPasswordRequest): Promise<string> {
+    try {
+      this._isLoading.set(true);
+      this._error.set(null);
+
+      // Call backend API - backend returns data directly, not wrapped in {data: ...}
+      const response = await this.apiClient.post<ApiResponse<string>>(
+        AUTH_ENDPOINTS.FORGOT_PASSWORD,
+        request
+      ).toPromise();
+
+      if (response && response.data) {
+        this.errorService.showSuccess('Mã OTP đã được gửi về email của bạn!', 'forgot-password');
+        return response.data;
+      } else {
+        throw new Error('Invalid response format');
+      }
+
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || 'Không thể gửi mã OTP. Vui lòng thử lại.';
+      this._error.set(errorMessage);
+      this.errorService.addError({
+        message: errorMessage,
+        type: 'error',
+        context: 'forgot-password'
+      });
+      throw error;
+    } finally {
+      this._isLoading.set(false);
+    }
+  }
+
+  async resetPassword(request: ResetPasswordRequest): Promise<string> {
+    try {
+      this._isLoading.set(true);
+      this._error.set(null);
+
+      // Call backend API - backend returns data directly, not wrapped in {data: ...}
+      const response = await this.apiClient.post<ApiResponse<string>>(
+        AUTH_ENDPOINTS.RESET_PASSWORD,
+        request
+      ).toPromise();
+
+      if (response && response.data) {
+        this.errorService.showSuccess('Mật khẩu đã được đặt lại thành công!', 'reset-password');
+        return response.data;
+      } else {
+        throw new Error('Invalid response format');
+      }
+
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || 'Không thể đặt lại mật khẩu. Vui lòng thử lại.';
+      this._error.set(errorMessage);
+      this.errorService.addError({
+        message: errorMessage,
+        type: 'error',
+        context: 'reset-password'
+      });
+      throw error;
+    } finally {
+      this._isLoading.set(false);
+    }
   }
 }

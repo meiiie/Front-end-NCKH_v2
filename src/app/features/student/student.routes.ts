@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { studentGuard } from '../../core/guards/role.guard';
+import { UnifiedLayoutComponent } from '../../shared/components/layout/unified-layout.component';
+import { studentLayoutConfig } from '../../shared/components/layout/layout.configs';
 
 /**
  * Student Routes Configuration
- * 
+ *
  * Cấu trúc routing đơn giản và chuyên nghiệp cho Student features
  * - Flat structure để dễ maintain
  * - Consistent naming conventions
@@ -13,7 +15,8 @@ import { studentGuard } from '../../core/guards/role.guard';
 export const studentRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./shared/student-layout-simple.component').then(m => m.StudentLayoutSimpleComponent),
+    component: UnifiedLayoutComponent,
+    data: { config: studentLayoutConfig },
     canActivate: [studentGuard],
     children: [
       // Default redirect to dashboard
