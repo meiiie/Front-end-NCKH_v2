@@ -101,7 +101,7 @@ export class AuthService {
     }
   }
 
-  private getAccessToken(): string | null {
+  getAccessToken(): string | null {
     return typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   }
 

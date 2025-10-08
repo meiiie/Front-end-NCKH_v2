@@ -28,13 +28,22 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
               <h1 class="text-3xl font-bold text-gray-900 mb-2">👥 Quản lý người dùng</h1>
               <p class="text-gray-600">Quản lý và theo dõi tất cả người dùng trong hệ thống</p>
             </div>
-            <button (click)="openCreateUserModal()"
-                    class="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-xl hover:from-red-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-              <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-              </svg>
-              Thêm người dùng
-            </button>
+            <div class="flex gap-4">
+              <button (click)="openCreateUserModal()"
+                      class="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-xl hover:from-red-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                </svg>
+                Thêm người dùng
+              </button>
+              <button (click)="openBulkImportModal()"
+                      class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                Import Excel
+              </button>
+            </div>
           </div>
         </div>
 
@@ -180,7 +189,7 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
                   <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
-                        <img [src]="user.avatar" 
+                        <img [src]="user.avatar"
                              [alt]="user.name"
                              class="w-10 h-10 rounded-full">
                         <div class="ml-4">
@@ -250,6 +259,66 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
               </tbody>
             </table>
           </div>
+
+          <!-- Pagination -->
+          @if (adminService.pagination() && adminService.pagination()!.totalPages > 1) {
+            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+              <div class="flex-1 flex justify-between sm:hidden">
+                <button (click)="goToPage(adminService.pagination()!.number)"
+                        [disabled]="adminService.pagination()!.first"
+                        class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Previous
+                </button>
+                <button (click)="goToPage(adminService.pagination()!.number + 2)"
+                        [disabled]="adminService.pagination()!.last"
+                        class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Next
+                </button>
+              </div>
+              <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm text-gray-700">
+                    Hiển thị
+                    <span class="font-medium">{{ (adminService.pagination()!.number * adminService.pagination()!.size) + 1 }}</span>
+                    đến
+                    <span class="font-medium">{{ getMinValue((adminService.pagination()!.number + 1) * adminService.pagination()!.size, adminService.pagination()!.totalElements) }}</span>
+                    trong tổng số
+                    <span class="font-medium">{{ adminService.pagination()!.totalElements }}</span>
+                    kết quả
+                  </p>
+                </div>
+                <div>
+                  <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button (click)="goToPage(adminService.pagination()!.number)"
+                            [disabled]="adminService.pagination()!.first"
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <span class="sr-only">Previous</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+
+                    @for (page of getVisiblePages(); track page) {
+                      <button (click)="goToPage(page)"
+                              [class]="page === adminService.pagination()!.number + 1 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'"
+                              class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        {{ page }}
+                      </button>
+                    }
+
+                    <button (click)="goToPage(adminService.pagination()!.number + 2)"
+                            [disabled]="adminService.pagination()!.last"
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <span class="sr-only">Next</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          }
         </div>
 
         <!-- Empty State -->
@@ -271,11 +340,9 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 
     <!-- Create User Modal -->
     @if (showCreateModal()) {
-      <div class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="fixed inset-0 z-50 overflow-y-auto" (click)="closeCreateUserModal()">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeCreateUserModal()"></div>
-          
-          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" (click)="$event.stopPropagation()">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -365,24 +432,24 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
                 </svg>
               </button>
             </div>
-            
+
             <div class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tên</label>
-                <input type="text" 
+                <input type="text"
                        [ngModel]="editingUser()?.name"
                        (ngModelChange)="updateEditingUser('name', $event)"
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" 
+                <input type="email"
                        [ngModel]="editingUser()?.email"
                        (ngModelChange)="updateEditingUser('email', $event)"
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
                 <select [ngModel]="editingUser()?.role"
@@ -393,26 +460,26 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
                   <option [ngValue]="UserRole.ADMIN">Quản trị</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Khoa/Phòng ban</label>
-                <input type="text" 
+                <input type="text"
                        [ngModel]="editingUser()?.department"
                        (ngModelChange)="updateEditingUser('department', $event)"
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
               </div>
-              
+
               @if (editingUser()?.role === UserRole.STUDENT) {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Mã sinh viên</label>
-                  <input type="text" 
+                  <input type="text"
                          [ngModel]="editingUser()?.studentId"
                          (ngModelChange)="updateEditingUser('studentId', $event)"
                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
               }
             </div>
-            
+
             <div class="flex justify-end space-x-3 mt-6">
               <button (click)="closeEditModal()"
                       class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
@@ -421,6 +488,181 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
               <button (click)="saveUserEdit()"
                       class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
                 Lưu thay đổi
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Bulk Import Modal -->
+    @if (isBulkImportModalOpen()) {
+      <div class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    Import người dùng từ Excel
+                  </h3>
+
+                  <!-- Template Info -->
+                   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                     <div class="flex">
+                       <svg class="w-5 h-5 text-blue-400 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                       </svg>
+                       <div class="text-sm text-blue-700">
+                         <p class="font-medium mb-1">Định dạng file Excel yêu cầu:</p>
+                         <ul class="list-disc list-inside space-y-1 text-xs">
+                           <li>Cột A: Username (bắt buộc) - Tên đăng nhập</li>
+                           <li>Cột B: Email (bắt buộc) - Địa chỉ email</li>
+                           <li>Cột C: Full Name (bắt buộc) - Họ tên đầy đủ</li>
+                           <li>Cột D: Department (tùy chọn) - Phòng ban/Khoa</li>
+                         </ul>
+                         <button (click)="downloadTemplate()"
+                                 class="mt-2 text-blue-600 hover:text-blue-800 underline text-xs">
+                           Tải template mẫu
+                         </button>
+                       </div>
+                     </div>
+                   </div>
+
+                   <!-- Role Selection -->
+                   <div class="mb-4">
+                     <label class="block text-sm font-medium text-gray-700 mb-2">
+                       Chọn vai trò cho tất cả người dùng được import
+                     </label>
+                     <select [(ngModel)]="defaultImportRole"
+                             name="importRole"
+                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                       <option [ngValue]="UserRole.STUDENT">Học viên</option>
+                       <option [ngValue]="UserRole.TEACHER">Giảng viên</option>
+                       <option [ngValue]="UserRole.ADMIN">Quản trị viên</option>
+                     </select>
+                     <p class="text-xs text-gray-500 mt-1">
+                       Tất cả người dùng trong file Excel sẽ được gán vai trò này
+                     </p>
+                   </div>
+
+                  <!-- File Upload -->
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Chọn file Excel (.xlsx hoặc .xls)
+                      </label>
+                      <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition-colors">
+                        @if (selectedFile()) {
+                          <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="mt-4">
+                              <p class="text-sm font-medium text-gray-900">{{ selectedFile()?.name }}</p>
+                              <p class="text-xs text-gray-500">{{ formatFileSize(selectedFile()?.size || 0) }}</p>
+                            </div>
+                            <button (click)="removeFile()"
+                                    class="mt-2 text-red-600 hover:text-red-800 text-sm underline">
+                              Chọn file khác
+                            </button>
+                          </div>
+                        } @else {
+                          <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <div class="mt-4">
+                              <label for="file-upload" class="cursor-pointer">
+                                <span class="mt-2 block text-sm font-medium text-gray-900">Kéo thả file vào đây hoặc</span>
+                                <span class="mt-1 block text-sm text-blue-600 hover:text-blue-500">chọn file từ máy tính</span>
+                              </label>
+                              <input id="file-upload" name="file-upload" type="file" class="sr-only" accept=".xlsx,.xls" (change)="onFileSelected($event)">
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    @if (adminService.bulkImportProgress().isImporting) {
+                      <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                          <span class="text-gray-600">{{ adminService.bulkImportProgress().currentStep }}</span>
+                          <span class="text-gray-600">{{ adminService.bulkImportProgress().progress }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                               [style.width.%]="adminService.bulkImportProgress().progress"></div>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Import Results -->
+                    @if (adminService.bulkImportProgress().result) {
+                      <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Kết quả import:</h4>
+                        <div class="grid grid-cols-3 gap-4 text-sm">
+                          <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">{{ adminService.bulkImportProgress().result?.totalRows }}</div>
+                            <div class="text-gray-600">Tổng dòng</div>
+                          </div>
+                          <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">{{ adminService.bulkImportProgress().result?.successfulImports }}</div>
+                            <div class="text-gray-600">Thành công</div>
+                          </div>
+                          <div class="text-center">
+                            <div class="text-2xl font-bold text-red-600">{{ adminService.bulkImportProgress().result?.failedImports }}</div>
+                            <div class="text-gray-600">Thất bại</div>
+                          </div>
+                        </div>
+
+                        @if (adminService.bulkImportProgress().result!.errors.length > 0) {
+                           <div class="mt-4">
+                             <h5 class="font-medium text-red-700 mb-2">Lỗi chi tiết:</h5>
+                             <div class="bg-red-50 border border-red-200 rounded p-3 max-h-32 overflow-y-auto">
+                               <ul class="text-xs text-red-700 space-y-1">
+                                 @for (error of adminService.bulkImportProgress().result!.errors; track $index) {
+                                   <li>• {{ error }}</li>
+                                 }
+                               </ul>
+                             </div>
+                           </div>
+                         }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button (click)="startBulkImport()"
+                      [disabled]="!selectedFile() || adminService.bulkImportProgress().isImporting"
+                      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                @if (adminService.bulkImportProgress().isImporting) {
+                  <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Đang import...
+                } @else {
+                  Import ngay
+                }
+              </button>
+              <button (click)="closeBulkImportModal()"
+                      [disabled]="adminService.bulkImportProgress().isImporting"
+                      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                @if (adminService.bulkImportProgress().result) {
+                  Đóng
+                } @else {
+                  Hủy
+                }
               </button>
             </div>
           </div>
@@ -453,6 +695,14 @@ export class UserManagementComponent implements OnInit {
   // Edit modal state
   isEditModalOpen = signal(false);
   editingUser = signal<AdminUser | null>(null);
+
+  // Bulk import modal state
+  isBulkImportModalOpen = signal(false);
+  selectedFile = signal<File | null>(null);
+  defaultImportRole = signal<UserRole>(UserRole.STUDENT);
+
+  // Pagination state
+  currentPage = signal(1);
 
   // Computed properties
   totalUsers = computed(() => this.adminService.totalUsers());
@@ -492,8 +742,11 @@ export class UserManagementComponent implements OnInit {
     this.loadUsers();
   }
 
-  async loadUsers(): Promise<void> {
-    await this.adminService.getUsers();
+  async loadUsers(page: number = 1): Promise<void> {
+    this.currentPage.set(page);
+    const search = this.searchQuery() || undefined;
+    const response = await this.adminService.getUsers(page, 10, search);
+    // The service already updates the users and pagination signals internally
   }
 
   openCreateUserModal(): void {
@@ -609,5 +862,89 @@ export class UserManagementComponent implements OnInit {
       default:
         return 'Không xác định';
     }
+  }
+
+  // Pagination methods
+  async goToPage(page: number): Promise<void> {
+    if (page >= 1 && page <= (this.adminService.pagination()?.totalPages || 1)) {
+      await this.loadUsers(page);
+    }
+  }
+
+  getVisiblePages(): number[] {
+    const pagination = this.adminService.pagination();
+    if (!pagination) return [];
+
+    const currentPage = pagination.number + 1; // Convert 0-based to 1-based
+    const totalPages = pagination.totalPages;
+    const pages: number[] = [];
+
+    // Show max 5 pages around current page
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, currentPage + 2);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  // Bulk import methods
+  openBulkImportModal(): void {
+    this.isBulkImportModalOpen.set(true);
+    this.selectedFile.set(null);
+    this.defaultImportRole.set(UserRole.STUDENT);
+    this.adminService.resetBulkImportProgress();
+  }
+
+  closeBulkImportModal(): void {
+    this.isBulkImportModalOpen.set(false);
+    this.selectedFile.set(null);
+    this.adminService.resetBulkImportProgress();
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile.set(file);
+    }
+  }
+
+  removeFile(): void {
+    this.selectedFile.set(null);
+  }
+
+  async startBulkImport(): Promise<void> {
+    const file = this.selectedFile();
+    if (!file) return;
+
+    try {
+      await this.adminService.bulkImportUsers(file, this.defaultImportRole());
+      // Refresh user list after successful import
+      await this.loadUsers(this.currentPage());
+      // Close modal after successful import
+      setTimeout(() => {
+        this.closeBulkImportModal();
+      }, 2000);
+    } catch (error) {
+      console.error('Bulk import failed:', error);
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  getMinValue(a: number, b: number): number {
+    return Math.min(a, b);
+  }
+
+  downloadTemplate(): void {
+    this.adminService.downloadExcelTemplate();
   }
 }
