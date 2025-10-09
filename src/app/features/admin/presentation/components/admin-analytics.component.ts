@@ -1,6 +1,6 @@
 import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminService, AdminAnalytics } from '../../infrastructure/services/admin.service';
+import { AnalyticsService, AdminAnalytics } from '../../infrastructure/services/analytics.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 
 @Component({
@@ -9,8 +9,8 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
   encapsulation: ViewEncapsulation.None,
   template: `
     <!-- Loading State -->
-    <app-loading 
-      [show]="adminService.isLoading()" 
+    <app-loading
+      [show]="analyticsService.isLoading()"
       text="Đang tải dữ liệu phân tích..."
       subtext="Vui lòng chờ trong giây lát"
       variant="overlay"
@@ -289,18 +289,18 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminAnalyticsComponent implements OnInit {
-  protected adminService = inject(AdminService);
+  protected analyticsService = inject(AnalyticsService);
   protected Math = Math;
 
   // Computed properties
-  analytics = computed(() => this.adminService.analytics());
+  analytics = computed(() => this.analyticsService.analytics());
 
   ngOnInit(): void {
     this.loadAnalytics();
   }
 
   async loadAnalytics(): Promise<void> {
-    await this.adminService.getAnalytics();
+    await this.analyticsService.getAnalytics();
   }
 
   async refreshAnalytics(): Promise<void> {

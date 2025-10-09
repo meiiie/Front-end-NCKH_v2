@@ -1,7 +1,7 @@
 import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminService, SystemSettings } from '../../infrastructure/services/admin.service';
+import { SystemSettingsService, SystemSettings } from '../../infrastructure/services/system-settings.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 
 @Component({
@@ -10,8 +10,8 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
   encapsulation: ViewEncapsulation.None,
   template: `
     <!-- Loading State -->
-    <app-loading 
-      [show]="adminService.isLoading()" 
+    <app-loading
+      [show]="systemSettingsService.isLoading()"
       text="Đang tải cài đặt hệ thống..."
       subtext="Vui lòng chờ trong giây lát"
       variant="overlay"
@@ -368,21 +368,21 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SystemSettingsComponent implements OnInit {
-  protected adminService = inject(AdminService);
+  protected systemSettingsService = inject(SystemSettingsService);
 
   // State
   activeTab = signal<'general' | 'email' | 'payment' | 'security'>('general');
   isSaving = signal(false);
 
   // Computed properties
-  settings = computed(() => this.adminService.settings());
+  settings = computed(() => this.systemSettingsService.settings());
 
   ngOnInit(): void {
     this.loadSettings();
   }
 
   async loadSettings(): Promise<void> {
-    await this.adminService.getSettings();
+    await this.systemSettingsService.getSettings();
   }
 
   setActiveTab(tab: 'general' | 'email' | 'payment' | 'security'): void {
@@ -393,7 +393,7 @@ export class SystemSettingsComponent implements OnInit {
     this.isSaving.set(true);
     try {
       if (this.settings()) {
-        await this.adminService.updateSettings(this.settings()!);
+        await this.systemSettingsService.updateSettings(this.settings()!);
       }
     } finally {
       this.isSaving.set(false);
@@ -411,7 +411,7 @@ export class SystemSettingsComponent implements OnInit {
           [key]: value
         }
       };
-      this.adminService.updateSettings(updatedSettings);
+      this.systemSettingsService.updateSettings(updatedSettings);
     }
   }
 
@@ -425,7 +425,7 @@ export class SystemSettingsComponent implements OnInit {
           [key]: value
         }
       };
-      this.adminService.updateSettings(updatedSettings);
+      this.systemSettingsService.updateSettings(updatedSettings);
     }
   }
 
@@ -439,7 +439,7 @@ export class SystemSettingsComponent implements OnInit {
           [key]: value
         }
       };
-      this.adminService.updateSettings(updatedSettings);
+      this.systemSettingsService.updateSettings(updatedSettings);
     }
   }
 
@@ -453,7 +453,7 @@ export class SystemSettingsComponent implements OnInit {
           [key]: value
         }
       };
-      this.adminService.updateSettings(updatedSettings);
+      this.systemSettingsService.updateSettings(updatedSettings);
     }
   }
 }

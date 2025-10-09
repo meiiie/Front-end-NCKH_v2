@@ -12,6 +12,7 @@ import { authInterceptor } from './api/interceptors/auth.interceptor';
 import { errorInterceptor } from './api/interceptors/error.interceptor';
 import { tokenRefreshInterceptor } from './api/interceptors/token-refresh.interceptor';
 import { GlobalErrorHandler } from './core/error/global-error-handler';
+import { adminProviders } from './features/admin';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,6 +32,8 @@ export const appConfig: ApplicationConfig = {
     },
     // Set default locale to Vietnamese for pipes like CurrencyPipe, DatePipe, etc.
     { provide: LOCALE_ID, useValue: 'vi' },
+    // Admin feature providers (DDD)
+    ...adminProviders,
     // Service Worker disabled in development to avoid redirect issues
     ...(isDevMode() ? [] : [
       provideServiceWorker('ngsw-worker.js', {

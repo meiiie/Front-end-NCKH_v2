@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/role.guard';
-import { UnifiedLayoutComponent } from '../../shared/components/layout/unified-layout.component';
-import { adminLayoutConfig } from '../../shared/components/layout/layout.configs';
+import { AdminLayoutSimpleComponent } from './presentation/components/admin-layout-simple.component';
 
 /**
  * Admin Routes Configuration
@@ -15,8 +14,7 @@ import { adminLayoutConfig } from '../../shared/components/layout/layout.configs
 export const adminRoutes: Routes = [
   {
     path: '',
-    component: UnifiedLayoutComponent,
-    data: { config: adminLayoutConfig },
+    component: AdminLayoutSimpleComponent,
     canActivate: [adminGuard],
     children: [
       // Default redirect to dashboard

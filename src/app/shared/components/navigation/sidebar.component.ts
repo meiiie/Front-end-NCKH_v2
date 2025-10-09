@@ -7,10 +7,12 @@ import { UserRole } from '../../../shared/types/user.types';
 export interface SidebarMenuItem {
   label: string;
   route: string;
-  icon: string;
+  icon?: string; // Keep for backward compatibility
+  iconKey?: string; // New maritime-themed icons
   badge?: string | number;
   children?: SidebarMenuItem[];
   exact?: boolean;
+  description?: string;
 }
 
 export interface SidebarConfig {

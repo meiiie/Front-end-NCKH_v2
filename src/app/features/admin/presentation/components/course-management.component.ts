@@ -2,7 +2,7 @@ import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy, V
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AdminService, AdminCourse } from '../../infrastructure/services/admin.service';
+import { CourseManagementService, AdminCourse } from '../../infrastructure/services/course-management.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 
 @Component({
@@ -11,8 +11,8 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
   encapsulation: ViewEncapsulation.None,
   template: `
     <!-- Loading State -->
-    <app-loading 
-      [show]="adminService.isLoading()" 
+    <app-loading
+      [show]="courseManagementService.isLoading()"
       text="Đang tải dữ liệu khóa học..."
       subtext="Vui lòng chờ trong giây lát"
       variant="overlay"
@@ -333,7 +333,7 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CourseManagementComponent implements OnInit {
-  protected adminService = inject(AdminService);
+  protected courseManagementService = inject(CourseManagementService);
 
   // Filter states
   searchQuery = signal('');
@@ -346,13 +346,13 @@ export class CourseManagementComponent implements OnInit {
   rejectionReason = signal('');
 
   // Computed properties
-  totalCourses = computed(() => this.adminService.courses().length);
-  pendingCourses = computed(() => this.adminService.pendingCourses());
-  approvedCourses = computed(() => this.adminService.approvedCourses());
-  totalRevenue = computed(() => this.adminService.totalRevenue());
+  totalCourses = computed(() => this.courseManagementService.courses().length);
+  pendingCourses = computed(() => this.courseManagementService.pendingCourses());
+  approvedCourses = computed(() => this.courseManagementService.approvedCourses());
+  totalRevenue = computed(() => this.courseManagementService.totalRevenue());
 
   filteredCourses = computed(() => {
-    let courses = this.adminService.courses();
+    let courses = this.courseManagementService.courses();
     
     // Filter by search query
     if (this.searchQuery()) {
@@ -383,11 +383,11 @@ export class CourseManagementComponent implements OnInit {
   }
 
   async loadCourses(): Promise<void> {
-    await this.adminService.getCourses();
+    await this.courseManagementService.getCourses();
   }
 
   async approveCourse(courseId: string): Promise<void> {
-    await this.adminService.approveCourse(courseId);
+    await this.courseManagementService.approveCourse(courseId);
   }
 
   openRejectModal(course: AdminCourse): void {
@@ -404,7 +404,7 @@ export class CourseManagementComponent implements OnInit {
 
   async rejectCourse(): Promise<void> {
     if (this.selectedCourse() && this.rejectionReason()) {
-      await this.adminService.rejectCourse(this.selectedCourse()!.id, this.rejectionReason());
+      await this.courseManagementService.rejectCourse(this.selectedCourse()!.id, this.rejectionReason());
       this.closeRejectModal();
     }
   }
